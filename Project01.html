@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Ryan Vay - Project 01 - Choose Your Own Adventure</title>
+    <link rel="stylesheet" href="Project01.css">
+    <script type="text/javascript" src="cookies.js"></script>
+    <script>
+        const DATA = {
+            /*
+            init: ['who are you looking for?', 
+                '', 'man', 'woman'],
+            man: ['how do you like \'em?', '', 'tall', 'short'],
+            tall: ['how round?', '', 'husky like', 'thin'],
+            'husky like': ['another?', '', 'rich', 'poor', 'husky like'],
+            thin: ['another?', '', 'rich', 'poor', 'husky like'],
+            woman: ['how do you like \'em?', '', 'tall', 'short'],
+            short: ['that\'s great.']
+            */
+            init: ['You enter a mysterious cave and are met with three branching paths. Which way do you go?', 
+                '', 'left', 'center', 'right'],
+            
+            left: ['You come across a large river. It seems to be flowing fast. What will you do?', 
+                '', 'swim across', 'make a bridge', 'give up'],
+            'swim across': ['Bad idea! The current is too strong, and it sweeps you away to parts unknown...'],
+            'make a bridge': ['You take a long plank of wood nearby and place it over the river. As you try to walk across, it snaps and dumps you in the river. That\'s what you get for trusting cave wood...'],
+            'give up': ['Who would have thought that water would be what brings your adventure to a halt? Looks like you\'re not cut out for this after all...'],
+
+            center: ['You find an abandoned temple from many years past. What will you do here?', 
+                '', 'move deeper in', 'examine a statue'],
+            'move deeper in': ['As you move into the temple, you\'re confronted with a ferocious roar! A wolf-like beast has made this temple its home! How do you respond?', 
+                '', 'run away', 'fight back'],
+            'run away': ['You run as fast as your legs can carry you. Unfortunately, you only have two and the beast has four...'],
+            'fight back': ['It\'s a tough fight, but you manage to slay the beast. As you\'re recovering, you hear an even louder roar and see an even louder figure. That was a baby, and here comes the mother...'],
+            'examine a statue': ['In the center of this temple is a statue of a figure you don\'t recognize. It seems to be whatever god was once worshipped here. What do you do?', 
+                '', 'search for a secret', 'move on'],
+            'search for a secret': ['You fiddle with the statue. Maybe there\'s some action that will reveal a hidden passageway, or lost knowledge! But you\'re a little two vigorous, and the statue topples over and breaks. The next thing you feel is a bolt of divine punishment...'],
+            'move on': ['You have nothing more to do with the statue, and so you get on your way. Whoever that god was, they weren\'t happy about getting attention for the first time in decades only to be ignored, and they smite you where you stand. What a needy god...'],
+
+            right: ['You are in a maze of twisty little passages, all alike. Which one will you take?', 
+                '', 'the twisty one', 'the twistier one', 'the twistiest one'],
+            'the twisty one': ['You are in a maze of twisty little passages, all alike. Which one will you take?', 
+                '', 'the twisty one', 'the twistier one', 'the twistiest one'],
+            'the twistiest one': ['You are in a maze of twisty little passages, all alike. Which one will you take?', 
+                '', 'the twisty one', 'the twistier one', 'the twistiest one'],
+            'the twistier one': ['Navigating the twisty little passages has led you to an ancient artifact! Question is...how do you get it out?', 
+                '', 'carry it', 'drag it'],
+            'carry it': ['It\'s way heavier than it looks! Trying to lift it causes you to throw your back out. It wasn\'t monsters that put you in a world of hurt, but your own hubris...'],
+            'drag it': ['You tie a rope to the artifact and try to drag it out. You exit the cave, only to realize that so much scraping againstthe cave floor has torn the artifact to bits...']
+            
+        }
+
+        // Holds user's choices
+        var choices = [];
+        // Each potential choice, to create an ending summary
+        var endingChoices = ['left', 'swim across', 'make a bridge', 'give up', 'center', 'move deeper in', 'run away', 'fight back', 'examine a statue', 
+            'search for a secret', 'move on', 'right', 'the twisty one', 'the twistiest one', 'the twistier one', 'carry it', 'drag it'];
+        // Messages to represent each choice, in corresponding positions with endingChoices
+        var endingMessages = ['came across an intimidating river, ', 'and was swept away trying to swim...', 'and had their ingenuity fail them...',
+            'and quit on the spot...', 'found an ancient temple, ', 'encountered a ferocious beast, ', 'and failed to get away...', 
+            'and incurred the wrath of its mother...', 'studied a forgotten god\'s statue, ', 'and was smited for defiling it...', 
+            'and was struck down for not worshipping it...', 'found themselves in a maze, ', 'ventured through a twisty passage, ', 
+            'got through the TWISTIEST passage, ', 'made it through to find a relic, ', 'and injured themselves trying to get it out...', 
+            'and didn\'t think through their plan to get it out...'];
+        
+        // Primary function, creates questions and selects.
+        function makeSelects(dom)
+        {
+                // If this is the first question (being run onload), create welcome message and create the first question a unique way
+                if(typeof(dom) == 'string')
+                {
+                    // If the browser cannot support local storage, take them to an upgrade page
+                    if(!window.localStorage)
+                    { 
+	                    window.location.href = "Project01Old.html";
+                    }
+                    else
+                    {
+                        startingMessage();
+                    }
+                    var hold = DATA[dom];
+                }
+                // If this is run from a select onchange, get the value directly
+                else
+                {
+                    choices.push(dom.value);
+                    var hold = DATA[dom.value];
+                    // if this is an old select having its value changed, remove all following selects to start over from there
+                    if(dom.nextSibling != undefined)
+                    {
+                        var childList = document.getElementById('container').children;
+                        var below = 0;
+                        // wipe out array of choices to get rid of overridden ones
+                        choices = [];
+                        for(let i = 0; i < childList.length; i++)
+                        {
+                            // if the newly changed select has already been reached, remove all following children until nothing is left
+                            if(below == 1)
+                            {
+                                if(childList[i] != undefined)
+                                {
+                                    if(childList[i].nextSibling != undefined)
+                                    {
+                                        document.getElementById('container').removeChild(childList[i].nextSibling);
+                                    }
+                                    document.getElementById('container').removeChild(childList[i]);
+                                    i--;
+                                }
+                            }
+                            // when reaching the newly changed select, confirm it has been reached and add its value back into choices array
+                            else if(childList[i].value == dom.value && below == 0)
+                            {
+                                below = 1;
+                                choices.push(childList[i].value);
+                            }
+                            // if the child is a select and is not the newly changed one, add its value back into choices array
+                            if(childList[i].nodeName == 'SELECT' && below != 1)
+                            {
+                                choices.push(childList[i].value);
+                            }
+                        }
+                    }
+                }
+                // If the selected option leads to another select, create the question and select
+                if(hold != undefined && hold[2] != undefined)
+                {
+                    var sel = document.createElement("select");
+                    sel.setAttribute('id', 'dropdown');
+                    sel.setAttribute('tag', 'dropdown');
+                    sel.setAttribute('onchange', 'makeSelects(this)');
+                    var label = document.createElement("p")
+                    label.appendChild(document.createTextNode(hold[0]));
+                    document.getElementById('container').appendChild(label);
+                
+                    var size = hold.length;
+                    for (x = 1; x < hold.length; x++)
+                    {
+                        var option = document.createElement("option");
+                        option.value = hold[x];
+                        option.text = hold[x];
+                        sel.appendChild(option);
+                    }  
+                
+                    document.getElementById('container').appendChild(sel);
+                }
+                // If the selected option causes an ending, display selection message and ending message, then create a form for name entry
+                else
+                {
+                    // Get message from ending options which have a length of 1
+                    if(hold != undefined && hold[2] == undefined)
+                    {
+                        var label = document.createElement("p")
+                        label.appendChild(document.createTextNode(hold[0]));
+                        document.getElementById('container').appendChild(label);
+                    }
+                    endingMessage();
+                    //out of data, build form
+                    var br = document.createElement("br");
+
+                    var nameEntry = document.createElement('form');
+                    nameEntry.setAttribute('name', 'nameEntry');
+
+                    var fnEntry = document.createElement('input');
+                    fnEntry.setAttribute('name', 'fnEntry');
+                    fnEntry.setAttribute('type', 'text');
+                    fnEntry.setAttribute('placeholder', 'First Name');
+
+                    var lnEntry = document.createElement('input');
+                    lnEntry.setAttribute('name', 'lnEntry');
+                    lnEntry.setAttribute('type', 'text');
+                    lnEntry.setAttribute('placeholder', 'Last Name');
+
+                    var enterButton = document.createElement('button');
+                    enterButton.appendChild(document.createTextNode('Enter Name'));
+                    enterButton.setAttribute('onclick', 'return validateForm()');
+
+                    nameEntry.appendChild(fnEntry);
+                    nameEntry.appendChild(br.cloneNode());
+
+                    nameEntry.appendChild(lnEntry);
+                    nameEntry.appendChild(br.cloneNode());
+
+                    nameEntry.appendChild(enterButton);
+
+                    document.getElementById('container').appendChild(nameEntry);
+                }
+        }
+
+        // Display a standard message if no name has been entered, or a unique message if name cookies exist
+        function startingMessage()
+        {
+            if(GetCookie('firstName') == null || GetCookie('lastName') == null)
+            {
+                var firstMessage = document.createElement("p");
+                firstMessage.appendChild(document.createTextNode('Welcome to my adventure game. Read the situations and choose which action to take.'));
+                document.getElementById('container').appendChild(firstMessage);
+            }
+            else
+            {
+                var firstMessage = document.createElement("p");
+                firstMessage.appendChild(document.createTextNode('Welcome back ' + GetCookie('firstName') + ' ' + GetCookie('lastName')
+                    + ', here for another adventure?'));
+                document.getElementById('container').appendChild(firstMessage);
+            }
+        }
+
+        // When the user makes a choice that causes an ending, create and display a string to represent all their choices.
+        function endingMessage()
+        {
+            var endString = "Brave adventurer, who ";
+            if(choices[0] == '')
+            {
+                endString = endString.concat('did nothing...');
+            }
+            else
+            {
+                // iterate over list of choices, and find and concat the corresponding message to create a summary 
+                for(let x = 0; x < choices.length; x++)
+                {
+                    for(let y = 0; y < endingChoices.length; y++)
+                    {
+                        if(choices[x] == endingChoices[y])
+                        {
+                            endString = endString.concat(endingMessages[y]);
+                        }
+                    }
+                }
+            }
+            endString = endString.concat(" what is your name?");
+            var endStringEl = document.createElement("p");
+            endStringEl.appendChild(document.createTextNode(endString));
+            document.getElementById('container').appendChild(endStringEl);
+        }
+
+        // Check form to make sure each space has been filled; if no, highlight empty spaces and alert user; if yes, put the entered values into cookies
+        function validateForm()
+        {
+            var filled1 = true;
+			var entry = document.forms['nameEntry']['fnEntry'].value;
+			if(entry == "" || entry == null)
+			{
+				filled = false;
+				document.forms['nameEntry']['fnEntry'].style = "border-color: red";
+			}
+            else
+            {
+                SetCookie('firstName', entry);
+            }
+
+            var filled2 = true;
+			entry = document.forms['nameEntry']['lnEntry'].value;
+            if(entry == "" || entry == null)
+			{
+				filled2 = false;
+				document.forms['nameEntry']['lnEntry'].style = "border-color: red";
+			}
+            else
+            {
+                SetCookie('lastName', entry);
+            }
+
+            if(!filled1 || !filled2)
+            {
+                alert('Fill out both first and last name before submitting.');
+                return false;
+            }
+            var cookieMessage = document.createElement("p")
+                cookieMessage.appendChild(document.createTextNode('Thank you ' + GetCookie('firstName') + ' ' + GetCookie('lastName')
+                    + ', please play again soon.'));
+            document.getElementById('container').appendChild(cookieMessage);
+            return false;
+        }
+
+    </script>
+</head>
+<body onload="makeSelects('init')">
+    <h1 id="header">Choose Your Own Adventure!</h1>
+    <div id="container">
+
+    </div>
+</body>
+</html>

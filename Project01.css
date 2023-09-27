@@ -1,0 +1,72 @@
+body{
+    background-image: url("cobblestone.png");
+    background-repeat: repeat;
+}
+
+h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: fantasy;
+    font-weight: bold;
+}
+
+p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Papyrus';
+    font-size: 150%;
+    font-weight: bold;
+    animation: fadeIn1 3s;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 150%;
+    font-weight: bold;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn1 3s;
+    margin-top: 3%;
+}
+
+input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn1 3s;
+}
+
+select{
+    display: block;
+    margin: 0 auto;
+    animation: fadeIn2 5s;
+}
+
+.dropdown{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeIn1 {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+@keyframes fadeIn2 {
+    0% {opacity: 0;}
+    90% {opacity: 0;}
+    100% {opacity: 1;}
+}
